@@ -9,8 +9,7 @@ conio.h: Used for console input/output, specifically for functions like getch() 
 2. Function to Log Keys:
 The function keys() is responsible for capturing and logging keystrokes into a file.
 
-cpp
-Copy code
+
 int keys(char key, fstream& file) {
   file.open("key_file.txt", ios::app | ios::in | ios::out);
   if (file) {
@@ -51,8 +50,6 @@ This function checks if any special key (like Shift, Ctrl, Alt, Enter, etc.) is 
 3. Main Function:
 The main function sets up an infinite loop to capture keystrokes.
 
-cpp
-Copy code
 int main() {
   char key_press;
   int ascii_value;
